@@ -22,7 +22,7 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 ## Projects
 
-[[[cog
+<!-- [[[cog
 import cog, pathlib, subprocess
 
 def last_commit_date(d):
@@ -64,5 +64,5 @@ for d in dirs:
         summary_file.write_text(result.stdout.strip())
     cog.outl(f'### [{d.name}]({d.name}/README.md)\n')
     cog.outl(summary_file.read_text().strip() + "\n")
-]]]
-[[[end]]]
+]]] -->
+<!-- [[[end]]] -->

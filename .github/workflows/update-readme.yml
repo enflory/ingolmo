@@ -24,7 +24,7 @@ jobs:
       - name: Run cog
         env:
           LLM_GITHUB_MODELS_KEY: ${{ secrets.GITHUB_TOKEN }}
-        run: cog -r README.md
+        run: cog -r -b "<!-- [[[cog" -e "]]] -->" -E "<!-- [[[end]]] -->" README.md
 
       - name: Commit changes
         run: |
