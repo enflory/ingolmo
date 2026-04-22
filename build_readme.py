@@ -26,8 +26,7 @@ dirs = sorted(
     reverse=True,
 )
 
-lines = [f'*{len(dirs)} project{"s" if len(dirs) != 1 else ""}*\n']
-
+entries = []
 for d in dirs:
     readme_text = (d / "README.md").read_text()
     if "not-ai-generated" in readme_text:
@@ -45,9 +44,11 @@ for d in dirs:
             capture_output=True, text=True, check=True,
         )
         summary_file.write_text(result.stdout.strip())
-    lines.append(f'### [{d.name}]({d.name}/README.md)\n')
-    lines.append(summary_file.read_text().strip() + "\n")
+    entries.append(f'### [{d.name}]({d.name}/README.md)\n')
+    entries.append(summary_file.read_text().strip() + "\n")
 
+n = len(entries) // 2
+lines = [f'*{n} project{"s" if n != 1 else ""}*\n'] + entries
 new_content = "\n".join(lines)
 
 readme_path = root / "README.md"
