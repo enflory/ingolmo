@@ -23,4 +23,7 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 ## Projects
 
 <!-- projects-start -->
+
+*0 projects*
+
 <!-- projects-end -->
