@@ -19,3 +19,8 @@ Primarily as durable context for coding agents. When I start a new thread, I can
 Working material, not a portfolio. Expect unfinished notes, half-formed arguments, and threads I started and wandered away from. Some will be wrong; some will be superseded by the next entry. If something here looks polished, assume it's an accident.
 
 — Ethan, Director of Data & Analytics at Stio.
+
+## Projects
+
+<!-- projects-start -->
+<!-- projects-end -->
