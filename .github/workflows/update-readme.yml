@@ -21,10 +21,10 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Run cog
+      - name: Build README
         env:
           LLM_GITHUB_MODELS_KEY: ${{ secrets.GITHUB_TOKEN }}
-        run: cog -r -b "<!-- [[[cog" -e "]]] -->" -E "<!-- [[[end]]] -->" README.md
+        run: python build_readme.py
 
       - name: Commit changes
         run: |
