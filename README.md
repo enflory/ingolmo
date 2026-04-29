@@ -24,14 +24,18 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*2 projects*
+*3 projects*
 
-### [readme-update-ci-failure](readme-update-ci-failure/README.md)
+### [claude-managed-agents](claude-managed-agents/README.md)
 
-Following an automated failure to update the root `README.md` Projects section, the investigation pinpointed two main issues: the workflow did not trigger on pull requests and the workflow token lacked the required `models: read` permission for GitHub Models access. Additionally, diagnostics were hindered by `build_readme.py` capturing subprocess stderr, obscuring useful error details. The resolution involved updating workflow triggers and permissions, improving token handling in code, and enhancing error visibility, along with adding targeted tests to confirm correct behavior. These changes collectively ensure robust automation for summarizing new projects and updating the README upon future pushes to `main`.
+Anthropic’s Claude Managed Agents provides an asynchronous, autonomous agent runtime in the cloud, enabling tool-using Claude models to run stateful, long-running jobs while abstracting away the manual management of agent loops, session history, and sandboxed containers. Developers configure reusable agents and environments, initiate session jobs, integrate through event streams, and manage files, outputs, and custom tools via a well-defined API. The platform’s built-in toolset supports operational tasks like file I/O and web access, while memory, outcomes grading, and multiagent orchestration are emerging capabilities for sustained work and quality assurance. Adoption is best suited for complex automation where streaming progress, managed infrastructure, and persistent context are required, but not for low-latency or tightly-controlled local interactions.
 
 ### [realtime-api-low-latency-voice](realtime-api-low-latency-voice/README.md)
 
 Developing low-latency voice-to-voice applications with OpenAI's Realtime API requires a WebRTC-based architecture for browser and mobile clients, with session setup and sensitive business logic managed server-side for security and control. Key best practices include prioritizing conversational UX by focusing on reliable turn-taking, robust interruption handling, and precise latency measurement from the user's perspective, rather than only backend processing times. Voice prompts should be concise, operational, and tailored for spoken interaction, while narrow server-controlled tooling and layered fallback flows help minimize perceived latency. Instrumentation for audio quality, interruption, and network events is essential, and careful session management, cost controls, and privacy safeguards must be baked in from the start. Ultimately, real product quality hinges not just on the AI model but on rigorous media handling, server orchestration, and user-centric latency measurement.
+
+### [readme-update-ci-failure](readme-update-ci-failure/README.md)
+
+Following an automated failure to update the root `README.md` Projects section, the investigation pinpointed two main issues: the workflow did not trigger on pull requests and the workflow token lacked the required `models: read` permission for GitHub Models access. Additionally, diagnostics were hindered by `build_readme.py` capturing subprocess stderr, obscuring useful error details. The resolution involved updating workflow triggers and permissions, improving token handling in code, and enhancing error visibility, along with adding targeted tests to confirm correct behavior. These changes collectively ensure robust automation for summarizing new projects and updating the README upon future pushes to `main`.
 
 <!-- projects-end -->
