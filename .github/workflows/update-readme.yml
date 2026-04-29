@@ -3,9 +3,12 @@ name: Update README
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
+  models: read
 
 jobs:
   update-readme:
@@ -23,10 +26,11 @@ jobs:
 
       - name: Build README
         env:
-          LLM_GITHUB_MODELS_KEY: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python build_readme.py
 
       - name: Commit changes
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
