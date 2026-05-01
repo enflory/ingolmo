@@ -86,3 +86,78 @@ Delegated to claude-code-guide subagent. Key findings to incorporate:
 4. MCP memory server providing `store` / `retrieve_by_relevance` / `search_patterns` tools.
 
 This is the right mental model for the report: memory lives outside Claude Code (MCP server), and the harness's hooks/skills/subagents are the *plumbing* that connects the agent to it.
+
+### 2026-05-01 — three parallel subagent streams launched
+
+Decided to delegate the heavy survey work to three subagents running in parallel:
+
+1. **cli-agent-harness-survey/** — non-Claude-Code agent harnesses (Codex, Cursor, Cline, Aider, Continue, Goose, Amp, Zed) and the AGENTS.md / SKILL.md spec story.
+2. **standalone-memory-tools-survey-2026/** — 13 memory tools surveyed comparatively, with focus on MCP integration and 2026 updates.
+3. **memory-architectures-2026/** — opinionated technical synthesis of CoALA, storage substrates, write/read paths, decay, hierarchy, multi-agent, poisoning, evaluation.
+
+Each subagent created its own thread directory per repo conventions. Their READMEs are the deliverables; this thread's README will be a synthesis that indexes them and adds the cross-cutting recommendations.
+
+### 2026-05-01 — subagent thread #1 returned: cli-agent-harness-survey
+
+Key takeaways to fold into synthesis:
+
+- **AGENTS.md has won.** 60K+ repos by early 2026; OpenAI/Anthropic/Block put it under the Linux Foundation's Agentic AI Foundation in Dec 2025. Read by Codex, Cursor, Copilot, Gemini CLI, Devin, Sourcegraph Amp, Cline, Roo, VS Code, Windsurf, Aider (via `read:`), Zed, Warp; Claude Code reads it as fallback for missing CLAUDE.md.
+- **MCP is universal** — Aider is the only laggard.
+- **SKILL.md is consolidating** — Claude, Codex, Cursor, VS Code all read the same spec. Codex actively migrating users from `~/.codex/prompts/*.md` to Skills.
+- **Cline Memory Bank** is the most-copied open memory pattern: just markdown files in a `memory-bank/` directory (`projectbrief.md`, `productContext.md`, `activeContext.md`, `systemPatterns.md`, `techContext.md`, `progress.md`). Tool-agnostic because it's plain markdown.
+- **The portable 2026 stack**: AGENTS.md + MCP + Skills (SKILL.md) + memory-bank/ directory.
+- Per-tool format details: Cursor `.cursor/rules/*.mdc` with frontmatter + 4 rule types (Always/Auto Attached/Agent Requested/Manual); Roo `.roomodes` + `.roo/rules-{slug}/`; Aider `.aider.conf.yml` with `read:` key; Continue `config.yaml` with `rules:` array; Goose two-layer (`.goosehints` + Memory Extension).
+- Codex specifics: hierarchical AGENTS.md walked from git root → cwd, `~/.codex/` global. `[mcp_servers.*]` in `config.toml` (underscore matters — `mcp-servers` silently ignored). Sandbox modes (`read-only` / `workspace-write` / `danger-full-access`) × approval policies (`untrusted` / `on-request` / `never`).
+
+### 2026-05-01 — subagent thread #2 returned: memory-architectures-2026
+
+Highly opinionated, well-cited (CoALA, MemGPT, Voyager, Generative Agents, GraphRAG, Graphiti, SAGE, Mem0, MemoryOS, MINJA, A-MEMGUARD; LoCoMo, LongMemEval, MemoryAgentBench, MemoryBench).
+
+Stances I want to carry into the synthesis:
+
+- Pure-vector memory is a 2023 architecture; **2026 default is hybrid graph+vector with bitemporal edges**.
+- Async batch extraction beats per-turn or end-of-conv.
+- **Two-step extract-then-update** (Mem0 pattern) solves contradictory facts at write time.
+- **Bitemporal supersession** (Graphiti) is the right answer for any system needing historical queries / audit / recovery.
+- **Treat retrieved memory as untrusted user input.** Memory poisoning (MINJA, 2025) is real and under-discussed.
+- **Three-term retrieval scoring**: similarity + recency-decay + LLM-rated importance (Park et al. 2023 Generative Agents) is the de-facto template.
+- **Archive don't delete.** Hot vs cold memory tiers; only delete under regulatory requirement.
+- **Procedural memory unification**: tools, skills, prompt templates, few-shots are all the same kind of object — currently fragmented across systems.
+- **If you only run one benchmark, run LongMemEval; if two, add MemoryAgentBench's selective-forgetting subset.**
+- Open problems: cross-agent memory portability, provenance/citation, multi-tenant security, memory-context co-design, prompt-caching interaction, the injection attack surface.
+
+### 2026-05-01 — subagent thread #3 returned: standalone-memory-tools-survey-2026
+
+Comprehensive — 13 tools + comparison table + 9-step decision flow + cross-cutting cautions.
+
+Headline 2026 updates I didn't have:
+
+- **Mem0 SDK 2.0 (April 16, 2026)**: single-pass extraction (~50% latency cut), entity-linked hybrid retrieval baked in (no more "vector vs graph" mode toggle). **Mem0 Plugin v1.0.0 (April 2, 2026)** for Claude Code/Cursor/Codex with 9 MCP tools + lifecycle hooks (auto-capture at session-start, compaction, task completion, session-end).
+- **Letta Code (Dec 2025)** is now the #1 model-agnostic open-source coding agent on Terminal-Bench. **Context Repositories (Feb 12, 2026)** = git-backed memory directories, every edit a commit, subagents can branch/merge.
+- **Anthropic memory tool** (`memory_20250818`) is a Claude *tool primitive*, not an MCP server. BYOI storage via `BetaAbstractMemoryTool` (Python) / `betaMemoryTool` (TS). Pairs with context editing + compaction. ZDR-eligible. Public beta as of March 2026.
+- **OpenAI Codex memories** (Q1 2026 rollout): off by default, `[features] memories = true` in `~/.codex/config.toml`. Two sub-flags (`generate_memories`, `use_memories`). **Not available in EEA, UK, Switzerland at launch** — real European-deployment gotcha. Pattern: AGENTS.md for mandatory team rules (versioned), memories for personal IDE recall.
+- **Zep's published 84% LoCoMo number was corrected to 58.44%** after community scrutiny ([zep-papers issue #5](https://github.com/getzep/zep-papers/issues/5)). Treat vendor benchmarks as advocacy.
+- **Long-context models keep eating the floor** — recent analysis ([arXiv 2603.04814](https://arxiv.org/html/2603.04814v1)) finds long-context GPT-5-mini outperforms fact-based memory by 30+ points on LoCoMo/LongMemEval until ~10 turns past 100K tokens. **Memory wins on cost and latency, not raw accuracy.**
+- **Supermemory** is the leading "universal memory" hosted product — five-layer pipeline, Cloudflare Durable Objects edge, sub-300ms at >100B tokens/month, hosted MCP URL per user.
+- **Basic Memory's AGPL-3.0** is a license trap for commercial users.
+- Decay is still the open problem — only Cognee (`memify`), MemoryOS (heat-based), Letta (sleep-time compute), and `mcp-memory-service` (Ebbinghaus) attempt automatic consolidation.
+
+### 2026-05-01 — synthesis plan
+
+The four research artifacts in order of generality:
+
+1. `ai-memory-systems/README.md` — synthesis (this thread). The index that ties everything together with cross-cutting recommendations and the integration patterns into Claude Code / Codex specifically.
+2. `cli-agent-harness-survey/README.md` — file-based agent harness reference.
+3. `standalone-memory-tools-survey-2026/README.md` — memory tool catalog.
+4. `memory-architectures-2026/README.md` — architecture/theory layer.
+
+Synthesis sections planned:
+
+1. Executive summary (the three convergences: AGENTS.md, MCP, SKILL.md; the four memory camps; bitemporal + hybrid + extraction)
+2. The "markdown-as-agents" pattern — what it is, Claude Code's implementation, the cross-tool convergence, pointer to harness survey
+3. The standalone memory tool landscape — four camps, picks by use case, pointer to tools survey
+4. Architecture and patterns — CoALA, substrate choice, write/read/decay, multi-agent, pointer to architectures report
+5. Putting it together: integration patterns into Claude Code and Codex with concrete config snippets
+6. Single-user vs team/SaaS recommendations
+7. Open questions
+8. Sources / related work in this repo
