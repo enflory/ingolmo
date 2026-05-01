@@ -22,11 +22,15 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*7 projects*
+*8 projects*
 
 ### [power-bi-migration-tools](power-bi-migration-tools/README.md)
 
 Power BI migration off-ramps remain fragmented: as of mid-2026, no tool offers a turnkey, end-to-end migration from Power BI to another BI platform or open semantic layer. Microsoft’s shift to text-based formats (PBIP/TMDL) has improved extraction and diffing, yet migration requires stitching together open-source tools (like pbixray or Tabular Editor) for extracting data prep, semantic models, and reports. Conversion tooling is highly destination-dependent—AtScale and Sigma are notable for first-party support, but most other paths (e.g., Tableau, dbt, Cube) rely on a mix of LLM-assisted transpilation, hand-translation, and manual rebuilding of visuals, with service providers filling gaps. The field is advancing toward agentic migration patterns, where AI agents analyze and rewrite models via human-readable specs and iterative validation, but significant automation gaps persist, especially at the report and business logic layers. Teams contemplating migration should expect well-tooled inventory and extraction stages, labor-intensive measure and visual conversion, and a growing but immature ecosystem for AI-driven automation.
+
+### [cli-tools-for-ai-agents](cli-tools-for-ai-agents/README.md)
+
+As of 2026, command-line interfaces (CLIs) have become the primary tool layer for production AI agents, offering major advantages in token efficiency, composition, and leveraging models’ pretrained knowledge compared to machine-control protocols (MCP). However, designing CLIs for agents—not humans—requires specific best practices along five dimensions: discoverability, output discipline, failure modes, side-effect honesty, and composability. The central design goal is minimizing the number of “turns” (back-and-forth calls) needed for agents to complete tasks, prioritizing concise, structured, and schema-introspectable commands over traditional human-centric norms. The guidelines emphasize explicit error handling, readable outputs, versioned schemas, and agent-friendly defaults, forming a contract for reliable, scalable automation—while reserving MCP for the small subset of cases demanding advanced authentication, audit, or persistent state.
 
 ### [agentic-self-improvement](agentic-self-improvement/README.md)
 
