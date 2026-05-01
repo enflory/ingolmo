@@ -24,7 +24,11 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*3 projects*
+*4 projects*
+
+### [github-pages-hosting](github-pages-hosting/README.md)
+
+Offering free static site hosting directly from GitHub repositories, GitHub Pages enables fast deployment of HTML, CSS, and JS files without server-side code, making it ideal for portfolios, project documentation, and blogs. Users can publish sites via branch deployments or GitHub Actions, supporting a variety of static site generators like Jekyll, Hugo, Astro, and Next.js (static export mode), though careful configuration of base paths and routing is essential for project pages. The service imposes soft bandwidth and storage limits, provides custom domain integration with automated HTTPS, and restricts commercial use to non-transactional sites. Common pitfalls include SPA routing challenges, Jekyll file processing, plugin whitelists, and base path misconfigurations. Compared to alternatives like Cloudflare Pages, Vercel, and Netlify, GitHub Pages excels for open-source projects seeking a simple, cost-free static hosting solution tightly integrated with their source code.
 
 ### [claude-managed-agents](claude-managed-agents/README.md)
 
