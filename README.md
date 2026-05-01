@@ -22,11 +22,15 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*5 projects*
+*6 projects*
 
 ### [applescript-research](applescript-research/README.md)
 
 AppleScript is Apple's longstanding automation language for macOS, purpose-built for inter-application task orchestration with readable, English-like syntax. Its architecture relies on app-specific scripting dictionaries and Apple Events for deep integration, powering workflows across professional publishing, legal, healthcare, and creative industries. Despite stagnated development by Apple since 2016 and increased system security friction, AppleScript remains vital through third-party support (OmniGroup, BBEdit, FileMaker), robust communities, and tools like Keyboard Maestro and Script Debugger. Shortcuts has emerged as Apple’s new automation front-end but supplements rather than replaces AppleScript, whose extensibility and composability still underpin complex Mac workflows. Limitations like inconsistent app scriptability and lack of event triggers persist, yet AppleScript continues to enable powerful automation and inspires unclaimed opportunities in Mac RPA and AI-assisted scripting.
+
+### [agentic-self-improvement](agentic-self-improvement/README.md)
+
+Agentic self-improvement enables business agents to learn and adapt in real time using mechanisms such as persistent memory, intra-task reflection, prompt optimization, and trajectory retrieval—without retraining model weights or requiring ML infrastructure. Recent frameworks (e.g., Mem0, DSPy, LangGraph) allow teams to deploy agents that remember user preferences, revise outputs via self-critique, and optimize prompts using labeled data and periodic offline runs. The most accessible deployment stack consists of memory and reflection loops, which yield significant quality gains with minimal setup (LLM API, vector database, orchestration library). For narrow, well-defined tasks, research-grade systems like EvoTest and EvoAgentX offer automated workflow evolution. Overall, these patterns deliver measurable improvements (10–20% or more) across use cases such as customer support, document processing, and knowledge Q&A, while keeping operational complexity and risk manageable.
 
 ### [github-pages-hosting](github-pages-hosting/README.md)
 
