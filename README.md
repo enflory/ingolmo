@@ -22,7 +22,11 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*4 projects*
+*5 projects*
+
+### [applescript-research](applescript-research/README.md)
+
+AppleScript is Apple's longstanding automation language for macOS, purpose-built for inter-application task orchestration with readable, English-like syntax. Its architecture relies on app-specific scripting dictionaries and Apple Events for deep integration, powering workflows across professional publishing, legal, healthcare, and creative industries. Despite stagnated development by Apple since 2016 and increased system security friction, AppleScript remains vital through third-party support (OmniGroup, BBEdit, FileMaker), robust communities, and tools like Keyboard Maestro and Script Debugger. Shortcuts has emerged as Apple’s new automation front-end but supplements rather than replaces AppleScript, whose extensibility and composability still underpin complex Mac workflows. Limitations like inconsistent app scriptability and lack of event triggers persist, yet AppleScript continues to enable powerful automation and inspires unclaimed opportunities in Mac RPA and AI-assisted scripting.
 
 ### [github-pages-hosting](github-pages-hosting/README.md)
 
