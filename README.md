@@ -22,19 +22,15 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*13 projects*
+*14 projects*
 
-### [readme-update-token-limit](readme-update-token-limit/README.md)
+### [ai-bi-json-render-pattern](ai-bi-json-render-pattern/README.md)
 
-Facing repeated workflow failures due to READMEs exceeding GitHub Models' 8,000-token input cap, the project modified its automation script to truncate oversized READMEs before summarization. By introducing a 20,000-character input limit (well within the token limit and leaving room for prompts and responses), the new approach ensures compatibility with the API while preserving each README's essential front matter for concise summarization. Tests were added and updated to confirm truncation works as intended and the workflow configuration remains valid, effectively resolving the immediate token-limit issue without impacting most projects.
+Abhi Sivasailam’s AI-BI pattern leverages two complementary frameworks—Vercel v0 for bespoke, code-generated interactive data apps, and json-render for governed, high-volume classic BI dashboards driven by structured JSON specs. In this approach, an analytics agent (often an LLM) composes dashboards by selecting among pre-defined metrics and UI components, constrained by a catalog and semantic layer; it cannot invent new chart types or metrics. The json-render framework, sourced from Vercel Labs, streams JSON Patch operations to build up dashboards incrementally in a React runtime, ensuring both output validity and flexibility. The architecture centers on catalog design, meaning quality and clarity in the governed primitives dictate the success of dashboard automation, while spec persistence and devtools support maintain transparency and reviewability. This pattern situates AI as a composition engine atop established metric trees, echoing prior structured-output approaches and emphasizing the value of governance and abstraction over model sophistication in modern BI workflows.
 
 ### [ai-memory-systems](ai-memory-systems/README.md)
 
 By 2026, the ecosystem of CLI coding agents has converged on three open standards—AGENTS.md for project context, MCP for tool integrations (including memory), and SKILL.md for portable procedural knowledge—while persistent memory remains fragmented across graph-based, vector/extraction, filesystem, and research-grade tools. The most interoperable approach combines AGENTS.md, MCP servers, SKILL.md folders, and a `memory-bank/` directory of structured markdown files, with cross-session recall handled by MCP-compatible memory servers (like Mem0, Graphiti, or Supermemory). Integration patterns are standardized, but memory architectures vary: modern solutions blend graph and vector stores, support hierarchical and temporal recall, and emphasize provenance and security, yet decay mechanisms and cross-agent portability are still evolving. When extending a coding agent like Claude Code or Codex, the recommended stack centers on standards-backed markdown conventions plus MCP memory tools, with implementations tailored to team size, compliance needs, and portability requirements. Detailed comparative analyses and architecture guidance are provided in linked sub-reports, while ongoing challenges include provenance, portability, and secure multi-agent memory handling.
-
-### [standalone-memory-tools-survey-2026](standalone-memory-tools-survey-2026/README.md)
-
-By mid-2026, the AI memory-layer ecosystem has coalesced into several distinct architectures, each tailored to different agent workloads and recall needs. Solutions like Mem0 and Cognee focus on LLM-driven fact extraction and hybrid retrieval, while Zep/Graphiti provide temporally-aware knowledge graphs for explicit, auditable fact tracking. Filesystem-centric options (Letta, Basic Memory, Anthropic's memory tool) emphasize human-readable, versioned storage, often integrating with common developer workflows like git. SQL-based engines such as Memori appeal to teams requiring compliance and relational querying, whereas research-grade systems (MemoryOS, A-MEM) offer advanced memory consolidation or agentic linking models. Senior engineers select among these by weighing data type, control, and recall precision, balancing ease of integration, deployment modes, and suitability to their agent runtime or coding stack.
 
 ### [memory-architectures-2026](memory-architectures-2026/README.md)
 
@@ -43,6 +39,14 @@ In 2026, memory architectures for AI agents are defined primarily by the CoALA t
 ### [cli-agent-harness-survey](cli-agent-harness-survey/README.md)
 
 By mid-2026, major CLI and IDE coding agents have largely converged on three open standards for file-based harnessing: AGENTS.md for project instructions, MCP for tool integrations, and SKILL.md for portable procedural skills, all governed by the Linux Foundation's Agentic AI Foundation. However, rule formats, memory persistence, and command/prompt schemas remain fragmented, with each agent maintaining its own approach—though tools increasingly support migration and cross-reading of these configs. The Cline Memory Bank methodology, which organizes persistent context as markdown files, has emerged as a de facto pattern for agent-agnostic memory, but no universal standard exists yet. In practice, teams achieve maximum compatibility by combining AGENTS.md, MCP, SKILL.md, and a memory-bank folder, which are recognized across the ecosystem, while finer-grained rules and mode definitions stay tool-specific. Future standardization efforts are expected to focus on persistent memory and further consolidation of prompts and skill formats.
+
+### [standalone-memory-tools-survey-2026](standalone-memory-tools-survey-2026/README.md)
+
+By mid-2026, the AI memory-layer ecosystem has coalesced into several distinct architectures, each tailored to different agent workloads and recall needs. Solutions like Mem0 and Cognee focus on LLM-driven fact extraction and hybrid retrieval, while Zep/Graphiti provide temporally-aware knowledge graphs for explicit, auditable fact tracking. Filesystem-centric options (Letta, Basic Memory, Anthropic's memory tool) emphasize human-readable, versioned storage, often integrating with common developer workflows like git. SQL-based engines such as Memori appeal to teams requiring compliance and relational querying, whereas research-grade systems (MemoryOS, A-MEM) offer advanced memory consolidation or agentic linking models. Senior engineers select among these by weighing data type, control, and recall precision, balancing ease of integration, deployment modes, and suitability to their agent runtime or coding stack.
+
+### [readme-update-token-limit](readme-update-token-limit/README.md)
+
+Facing repeated workflow failures due to READMEs exceeding GitHub Models' 8,000-token input cap, the project modified its automation script to truncate oversized READMEs before summarization. By introducing a 20,000-character input limit (well within the token limit and leaving room for prompts and responses), the new approach ensures compatibility with the API while preserving each README's essential front matter for concise summarization. Tests were added and updated to confirm truncation works as intended and the workflow configuration remains valid, effectively resolving the immediate token-limit issue without impacting most projects.
 
 ### [cli-tools-for-ai-agents](cli-tools-for-ai-agents/README.md)
 
