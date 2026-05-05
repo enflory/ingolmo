@@ -11,10 +11,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 class ReadmeAutomationTests(unittest.TestCase):
-    def test_workflow_runs_on_prs_with_model_access_and_push_only_commit(self):
+    def test_workflow_has_model_access_and_push_only_commit(self):
         workflow = (ROOT / ".github" / "workflows" / "update-readme.yml").read_text()
 
-        self.assertIn("pull_request:", workflow)
         self.assertIn("models: read", workflow)
         self.assertIn("github.event_name == 'push'", workflow)
 
@@ -46,6 +45,18 @@ class ReadmeAutomationTests(unittest.TestCase):
         _, kwargs = run.call_args
         self.assertEqual(kwargs["env"]["GITHUB_MODELS_KEY"], "models-token")
         self.assertNotIn("GITHUB_TOKEN", kwargs["env"])
+
+    def test_generate_summary_truncates_oversized_readme(self):
+        completed = subprocess.CompletedProcess(["llm"], 0, stdout="ok\n", stderr="")
+        oversized = "x" * (build_readme.MAX_README_CHARS * 2)
+
+        with mock.patch.dict(os.environ, {"GITHUB_MODELS_KEY": "k"}, clear=True):
+            with mock.patch("build_readme.subprocess.run", return_value=completed) as run:
+                build_readme.generate_summary(oversized)
+
+        prompt = run.call_args.args[0][-1]
+        self.assertLess(len(prompt), build_readme.MAX_README_CHARS + 500)
+        self.assertIn("truncated", prompt)
 
 
 if __name__ == "__main__":

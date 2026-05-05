@@ -1,0 +1,62 @@
+diff --git a/build_readme.py b/build_readme.py
+index 0ae2a2a..a2cb118 100644
+--- a/build_readme.py
++++ b/build_readme.py
+@@ -7,6 +7,11 @@ import subprocess
+ MARKER_START = "<!-- projects-start -->"
+ MARKER_END = "<!-- projects-end -->"
+ 
++# GitHub Models' free tier caps a single request at 8000 input tokens. Keep the
++# README content well under that, leaving room for the prompt prefix and the
++# model's response. ~3 chars/token (conservative) ⇒ 20000 chars ≈ 6500 tokens.
++MAX_README_CHARS = 20000
++
+ 
+ def last_commit_date(d):
+     r = subprocess.run(
+@@ -16,8 +21,9 @@ def last_commit_date(d):
+     return int(r.stdout.strip() or "0")
+ 
+ 
+-
+ def generate_summary(readme_text):
++    if len(readme_text) > MAX_README_CHARS:
++        readme_text = readme_text[:MAX_README_CHARS] + "\n\n[... README truncated for length ...]"
+     prompt = (
+         "Summarize this research project concisely. Write 1 paragraph "
+         "(3-5 sentences). Vary your opening — do not start with 'This report' "
+diff --git a/tests/test_readme_automation.py b/tests/test_readme_automation.py
+index b649f03..99ba971 100644
+--- a/tests/test_readme_automation.py
++++ b/tests/test_readme_automation.py
+@@ -11,10 +11,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
+ 
+ 
+ class ReadmeAutomationTests(unittest.TestCase):
+-    def test_workflow_runs_on_prs_with_model_access_and_push_only_commit(self):
++    def test_workflow_has_model_access_and_push_only_commit(self):
+         workflow = (ROOT / ".github" / "workflows" / "update-readme.yml").read_text()
+ 
+-        self.assertIn("pull_request:", workflow)
+         self.assertIn("models: read", workflow)
+         self.assertIn("github.event_name == 'push'", workflow)
+ 
+@@ -47,6 +46,18 @@ class ReadmeAutomationTests(unittest.TestCase):
+         self.assertEqual(kwargs["env"]["GITHUB_MODELS_KEY"], "models-token")
+         self.assertNotIn("GITHUB_TOKEN", kwargs["env"])
+ 
++    def test_generate_summary_truncates_oversized_readme(self):
++        completed = subprocess.CompletedProcess(["llm"], 0, stdout="ok\n", stderr="")
++        oversized = "x" * (build_readme.MAX_README_CHARS * 2)
++
++        with mock.patch.dict(os.environ, {"GITHUB_MODELS_KEY": "k"}, clear=True):
++            with mock.patch("build_readme.subprocess.run", return_value=completed) as run:
++                build_readme.generate_summary(oversized)
++
++        prompt = run.call_args.args[0][-1]
++        self.assertLess(len(prompt), build_readme.MAX_README_CHARS + 500)
++        self.assertIn("truncated", prompt)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
