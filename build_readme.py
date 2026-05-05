@@ -7,6 +7,11 @@ import subprocess
 MARKER_START = "<!-- projects-start -->"
 MARKER_END = "<!-- projects-end -->"
 
+# GitHub Models' free tier caps a single request at 8000 input tokens. Keep the
+# README content well under that, leaving room for the prompt prefix and the
+# model's response. ~3 chars/token (conservative) ⇒ 20000 chars ≈ 6500 tokens.
+MAX_README_CHARS = 20000
+
 
 def last_commit_date(d):
     r = subprocess.run(
@@ -16,8 +21,9 @@ def last_commit_date(d):
     return int(r.stdout.strip() or "0")
 
 
-
 def generate_summary(readme_text):
+    if len(readme_text) > MAX_README_CHARS:
+        readme_text = readme_text[:MAX_README_CHARS] + "\n\n[... README truncated for length ...]"
     prompt = (
         "Summarize this research project concisely. Write 1 paragraph "
         "(3-5 sentences). Vary your opening — do not start with 'This report' "
