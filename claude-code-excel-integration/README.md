@@ -53,7 +53,7 @@ Claude Code's extension surface has three complementary pieces. Compose them.
 | Library | Purpose | Strengths | Hard limits |
 |---|---|---|---|
 | **openpyxl** | Read/write `.xlsx` with formulas + formatting | Preserves simple formula trees, formatting, basic cells. Standard in `xlsx` skill. | **Silently corrupts** files with macros, named ranges, complex conditional formatting, pivots, charts. `data_only=True` + save = formulas permanently replaced with values. |
-| **xlsxwriter** | Write new `.xlsx` | Faster than openpyxl, richer chart support, never corrupts because it's write-only | Cannot read or modify existing files |
+| **xlsxwriter** | Write new `.xlsx` | Faster than openpyxl, richer chart support, never corrupts because it's write-only | Cannot read or modify existing files. **No pivot table support** (jmcnamara/XlsxWriter#50). |
 | **pandas** | Tabular data I/O | Effortless DataFrame ↔ Excel | Drops formulas; not for model construction |
 | **calamine / python-calamine** | Fast read | 5-30x faster reads of large files | Read-only |
 
@@ -192,10 +192,10 @@ The most common Claude Code anti-pattern. The model becomes static and the user 
 
 ### 5. Pivot tables and charts
 
-openpyxl's pivot table support is basically read-and-corrupt. If your deliverable needs pivots, either:
-- Build the pivot in xlsxwriter (write-only, supports pivots)
-- Pre-compute equivalent crosstabs in pandas and write as a regular table
-- Drive live Excel via xlwings/Office.js
+openpyxl's pivot table support is basically read-and-corrupt; xlsxwriter has **no** pivot table support (longstanding gap — see jmcnamara/XlsxWriter#50). If your deliverable needs pivots, your only real options are:
+- Pre-compute equivalent crosstabs in pandas and write as a regular formatted table (looks like a pivot, isn't interactive)
+- Drive live Excel via xlwings (creates real, refreshable pivots) or the Claude for Excel add-in
+- Use Office Scripts in Excel for the web
 
 ### 6. PowerPoint AI-tells
 
@@ -257,14 +257,17 @@ Why this works: the model is reproducible. Change an input CSV, re-run, get a ne
 Use the **Claude for Excel add-in** for this when possible — it gives cell-level citations and won't corrupt the file. If you must use Claude Code:
 
 ```
-1. Read-only inspect: load_workbook(path, data_only=True, read_only=True)
+1. Read-only inspect, two passes:
+     a) load_workbook(path, read_only=True)               # formulas as text — needed for the audit
+     b) load_workbook(path, read_only=True, data_only=True) # cached values for tie-out checks
+   Run recalc.py first if the file's cache is stale; never save a workbook opened with data_only=True.
 2. Claude generates an audit report (markdown) covering:
-   - Formula consistency across columns
+   - Formula consistency across columns (compare formula strings from pass a)
    - Off-by-one errors
-   - Hard-coded values in formula cells (anti-pattern)
+   - Hard-coded values in formula cells (anti-pattern — pass a reveals these)
    - Circular references
    - #REF!/#DIV/0!/etc. that survived
-   - Tabs that don't tie out (BS doesn't balance, CF doesn't reconcile to BS)
+   - Tabs that don't tie out (BS doesn't balance, CF doesn't reconcile to BS — pass b values)
 3. Claude proposes fixes as a *patch* — never directly mutates the file
 4. Human applies fixes manually in Excel, OR uses xlwings to apply
 ```
