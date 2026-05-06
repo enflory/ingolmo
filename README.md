@@ -22,7 +22,11 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*14 projects*
+*15 projects*
+
+### [claude-code-excel-integration](claude-code-excel-integration/README.md)
+
+Corporate finance teams can utilize Claude Code—a command-line AI agent—to efficiently build, audit, and report on Excel models while minimizing risks of file corruption and maintaining industry formatting standards. The project details best practices for choosing the appropriate tool, such as using Claude Code with the `xlsx` skill for new or batch workbook creation, and Claude for Excel add-in for safe, interactive edits, especially with complex files containing macros or named ranges. Key recommendations include version-controlling inputs, enforcing rigorous model and visual checks, and using recalc loops with LibreOffice to catch formula errors. The guide further outlines common failure modes, optimal library selection, and workflow patterns for scenarios ranging from model builds to pitchbook generation, ensuring reproducibility and compliance for financial professionals.
 
 ### [ai-bi-json-render-pattern](ai-bi-json-render-pattern/README.md)
 
