@@ -22,7 +22,11 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*15 projects*
+*16 projects*
+
+### [enterprise-data-agents](enterprise-data-agents/README.md)
+
+By mid-2026, leading organizations like OpenAI and Ramp converged on a distinctive architecture for agentic data systems, deploying always-on AI agents that transform how enterprise questions are answered. These systems anchor themselves on a multi-layer context store, enriched by code-derived semantics and institutional knowledge, enabling an agent to reason through intermediate steps, branch, and self-correct in minutes rather than hours. The critical technical investments are in context engineering, evaluation harnesses asserting on intermediate tool calls, and intuitive interface integration (primarily Slack), rather than in custom modeling or prompt engineering. This shift unlocks a dramatically higher volume and diversity of questions—especially those previously unasked—yielding compounding cultural and decision-quality benefits across the organization.
 
 ### [claude-code-excel-integration](claude-code-excel-integration/README.md)
 
