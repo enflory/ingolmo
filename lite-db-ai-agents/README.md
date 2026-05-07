@@ -233,11 +233,17 @@ Agent flags the suspicious cases, joins back to opportunity owner and rep tenure
 **With agent + DuckDB.**
 
 ```sql
+WITH q1 AS (
+  SELECT *
+  FROM expense_reports
+  WHERE submitted_at BETWEEN '2026-01-01' AND '2026-03-31'
+)
 SELECT *
-FROM expense_reports
-USING SAMPLE 50 ROWS (reservoir, 42)  -- seed = 42 makes it reproducible
-WHERE submitted_at BETWEEN '2026-01-01' AND '2026-03-31';
+FROM q1
+USING SAMPLE 50 ROWS (reservoir, 42);  -- seed = 42 makes it reproducible
 ```
+
+The CTE matters: in DuckDB `USING SAMPLE` runs before `WHERE`, so writing `FROM expense_reports USING SAMPLE 50 ROWS … WHERE submitted_at BETWEEN …` would sample 50 rows from the whole table and *then* filter, leaving fewer than 50 (and a biased fragment of) Q1 rows. Filter first, sample after.
 
 For stratified, the agent generates one query per department with a per-stratum row count proportional to spend.
 
