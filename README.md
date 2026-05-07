@@ -22,7 +22,15 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*16 projects*
+*18 projects*
+
+### [lite-db-ai-agents](lite-db-ai-agents/README.md)
+
+In 2026, the de facto approach for empowering enterprise AI agents to perform analytics on business data is embedding lightweight databases—primarily DuckDB and SQLite—directly within the agent’s compute stack. This research demonstrates that lite DBs make agents more reliable and efficient by providing deterministic math execution, minimizing token usage, and enabling full auditability via SQL. The modern agent stack uses DuckDB for fast, ephemeral analytical workloads and SQLite (often augmented with vector search tools like sqlite-vec) for persistent, queryable memory, with adjacent tools (Polars, KuzuDB, LanceDB) filling niche roles. Lite DBs are best applied at the task or scratchpad layer—especially for CSV-rich, multi-source, ad-hoc workflows common in finance, marketing, or operations—rather than as a replacement for governed data warehouses or systems of record. By anchoring their analytical steps in embedded databases, enterprise AI agents can deliver trustworthy, auditable, and operationally efficient results across typical business scenarios.
+
+### [rag-domain-knowledge-strategies](rag-domain-knowledge-strategies/README.md)
+
+Optimizing AI systems for domain-specific knowledge in 2026 demands advanced context engineering strategies beyond naive RAG pipelines. For smaller corpora (<200K tokens), prompt caching with long-context eliminates retrieval failures and sharply reduces cost, while larger or cross-referenced collections require staged retrieval stacks: contextual chunking, hybrid vector/BM25 search, cross-encoder reranking, and—when queries demand relational or multi-hop reasoning—a graph-based layer such as LightRAG or HippoRAG. Tailored transcript processing (diarization, topic-based chunking, ASR cleanup, metadata layering) significantly boosts retrieval quality for expert workshop content. Embedding fine-tuning often outperforms generation fine-tuning, with evaluation focused on retrieval precision and grounding. The overarching principle is deliberate context design: structuring what the model sees per query and prioritizing retrieval improvements to unlock reliable, domain-grounded responses.
 
 ### [enterprise-data-agents](enterprise-data-agents/README.md)
 
