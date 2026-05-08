@@ -273,7 +273,7 @@ Turso publishes an llms.txt and an *awesome-turso* repo (`tursodatabase/awesome-
 
 The unit that matters is **monthly active databases (MAD)**: a DB that received any traffic in the calendar month. Idle DBs are free even at scale. That's the pricing innovation that makes "branch a DB on every PR / every agent action" economically sane.
 
-May 2026: **paid plans now include unlimited total active databases.** The free tier still caps MADs at 100, but Pro can have 10k+ active in a month and Enterprise is uncapped — this is what made the AC1 case (>2 M DBs total) possible.
+May 2026: **paid plans now include an unlimited *total* number of databases** — but the per-tier **monthly-active-database (MAD)** caps still apply (Hobby/Dev 500, Scaler 2,500, Pro 10,000; Free still 100). So you can keep millions of idle DBs around on any paid plan, but only *Enterprise* lifts the MAD cap — which is why the AC1 case (>2 M DBs total, very high active fan-out) sits on Enterprise, not Pro.
 
 ---
 
