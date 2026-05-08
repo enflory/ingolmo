@@ -20,7 +20,7 @@ OpenAI shipped three new models on the existing Realtime API on **2026-05-07**:
 
 The **API surface is unchanged** by this release: you keep the GA Realtime session you already have. You just change a model ID and, for `gpt-realtime-2`, optionally set `reasoning.effort`.
 
-If you are on the **beta API surface** or on the deprecated `gpt-4o-realtime-preview` model, you must do a separate, larger migration (header removed, endpoint moved to `/v1/realtime/calls`, audio config nested under `audio.*`, modalities renamed `output_modalities`, several event names prefixed with `output_`, session `type` field now required). That work is the actual cost; the new models drop in cleanly afterward.
+If you are on the **beta API surface** or on the deprecated `gpt-4o-realtime-preview` model, you must do a separate, larger migration (header removed, WebRTC handshake moved to `/v1/realtime/calls`, audio config nested under `audio.*`, modalities renamed `output_modalities`, several event names prefixed with `output_`, session `type` field now required for voice-agent and transcription sessions, translation now on its own `/v1/realtime/translations` endpoint with a different lifecycle). That work is the actual cost; the new models drop in cleanly afterward.
 
 ---
 
@@ -69,14 +69,76 @@ All three are exposed via the **GA Realtime API** path (`POST /v1/realtime/calls
 
 ## How the Realtime API surface looks today (reference)
 
-Carryovers, all still current:
+### Three session types, three lifecycles, two endpoints
 
-- **Transports**: WebRTC (recommended for browser/mobile), WebSocket (server-to-server), SIP (PSTN, PBX, desk phones), and the GA-only video support reported by webrtcHacks.
-- **Auth patterns**: server mints an ephemeral client secret and the browser POSTs its SDP to `/v1/realtime/calls`; or the app server proxies the whole call.
-- **Modalities**: text, audio, images. Video supported in GA (single-sourced; verify before depending on it).
-- **Tool use**: function calling with parallel tool calls; remote MCP servers attachable via session config (carried from August 2025).
-- **VAD**: `server_vad` (silence-based, tunable threshold/prefix/silence durations) or `semantic_vad` (chunks on perceived utterance completion, with `eagerness` setting). `null` to commit manually.
-- **Cost accounting**: audio is tokenized by time — 1 token per 100 ms of user audio, 1 token per 50 ms of assistant audio (carried from the original gpt-realtime cost guide). Per-minute pricing on `gpt-realtime-translate` and `gpt-realtime-whisper` makes that math irrelevant for those two models.
+Per the canonical *Realtime and audio* developer-docs overview:
+
+| Session type | When | Endpoint / pattern |
+| --- | --- | --- |
+| Voice-agent session | Assistant responds, calls tools, manages conversation state | Conversation session on `/v1/realtime` |
+| Translation session | Continuous live translation while the speaker talks | **`/v1/realtime/translations`** (dedicated endpoint) |
+| Transcription session | Streaming transcript deltas, no model-generated speech | Transcription session that emits transcript deltas |
+
+The voice-agent and transcription session types share the standard `/v1/realtime` shape and are distinguished by the session `type` field on `session.update` (`"realtime"` vs `"transcription"`). The translation session is a **separate endpoint** with a different lifecycle:
+
+- **Continuous, not turn-based.**
+- **Do not call `response.create`.**
+- Do not wait for the client to commit a user turn — translation begins as audio arrives.
+- Browser clients use WebRTC; server media pipelines (phone-call ingest, broadcast) use WebSockets.
+
+For voice agents, the Agents SDK + WebRTC is the recommended browser path.
+
+### Transports
+
+- **WebRTC** — browser and mobile clients that capture or play audio directly. Recommended default for voice agents.
+- **WebSocket** — server-side pipelines that already receive raw audio (call systems, media workers, broadcast ingest). Required path for server-side translation.
+- **SIP** — telephony voice agents (PSTN, PBX, desk phones). **Confirm model support before using SIP for translation or transcription** — SIP availability is documented for the voice-agent path only.
+
+### Auth and connection
+
+- Server mints an ephemeral client secret via `POST /v1/realtime/client_secrets` and returns it to the browser.
+- Browser POSTs its SDP (with the ephemeral token) to `/v1/realtime/calls` to set up WebRTC for a voice-agent session, or to the equivalent path for a translation session.
+- Server-side WebSocket and unified WebRTC paths accept a standard API key on the connection request.
+
+### Modalities
+
+Text, audio, and images. Video support landed at GA per webrtcHacks (single-sourced for the May 2026 release; verify before depending on it).
+
+### Tool use
+
+Function calling with parallel tool calls; remote MCP servers attachable via session config (the *Realtime with tools* sub-guide covers function tools, MCP, and connectors).
+
+### Turn detection
+
+- `server_vad` — silence-based, tunable `threshold`, `prefix_padding_ms`, `silence_duration_ms`.
+- `semantic_vad` — chunks on perceived utterance completion, with `eagerness` setting.
+- `null` — commit manually (recommended for `gpt-realtime-whisper` if you control turn boundaries upstream).
+
+### Cost accounting
+
+S2S audio is tokenized by time: 1 token per 100 ms of user audio, 1 token per 50 ms of assistant audio (carried from the original gpt-realtime cost guide). Per-minute pricing on `gpt-realtime-translate` and `gpt-realtime-whisper` makes that math irrelevant for those two models.
+
+### Safety identifiers
+
+If your application identifies individual end users, send a stable, privacy-preserving identifier (e.g. a hashed internal user ID) in the `OpenAI-Safety-Identifier` header on Realtime API requests. Recommended, not required. It scopes abuse enforcement to a single user instead of your whole organization.
+
+- With **ephemeral tokens**, set the header on the **server-side** request that mints the client secret so the identifier binds to that session.
+- With trusted-server WebSocket or the unified WebRTC interface, set the header on the connection request.
+- Identifiers do **not** carry over from Responses API requests or from other Realtime sessions. Pass the same stable value per session.
+
+### Sub-pages of the Realtime guide
+
+- *Voice agents* — Agents SDK + WebRTC quickstart for browser voice agents.
+- *Realtime prompting guide* — tuning reasoning, preambles, tool use, unclear audio, exact-entity capture.
+- *Managing conversations* — session lifecycle, response control, interruption.
+- *Realtime translation* — dedicated endpoint, session config, broadcast vs conversational patterns.
+- *Realtime transcription* — streaming transcript-delta event handling.
+- *Realtime with tools* (`realtime-mcp`) — function tools, MCP servers, connectors.
+- *Webhooks and server-side controls* — sideband server control of an active session.
+- *Managing costs* — usage accounting and optimization.
+- *Audio and speech* — non-realtime primer (file uploads, TTS, audio in Chat Completions).
+
+Use *Audio and speech* / Speech to text / Text to speech for files, bounded requests, or generated speech that doesn't need a live session — these are explicitly *not* the Realtime API.
 
 ---
 
@@ -151,7 +213,9 @@ Genuinely a drop-in:
 
 **Use `gpt-realtime-whisper` for transcription-only legs** (call recording, captions, dictation) where you do not need the model to speak back. The cost gap vs running an S2S model in transcription mode is significant.
 
-**Mix freely on the same Realtime session shape.** All three use the same `session.update` event with the session `type` distinguishing `"realtime"` (S2S) from `"transcription"` (STT-only). You can run separate sessions of different types for the same call.
+**Don't assume all three share one endpoint.** Voice-agent and transcription sessions live on `/v1/realtime` and are distinguished by the session `type` field (`"realtime"` vs `"transcription"`) on `session.update`. **Translation lives on its own endpoint, `/v1/realtime/translations`, with a different lifecycle** — continuous, no `response.create`, no turn commits. You can run separate sessions in parallel for the same call (e.g. an S2S agent leg + a transcription leg for record-keeping), but routing translation through the standard endpoint is not the way; use the dedicated translation endpoint.
+
+**SIP availability is voice-agent-only.** SIP/PSTN connectivity is documented for voice-agent sessions. For translation or transcription over phones, expect to bridge phone audio through your server (WebSocket pipeline) instead of attaching SIP directly to those models, until OpenAI confirms otherwise.
 
 ---
 
@@ -186,6 +250,8 @@ These are documented in `realtime-api-low-latency-voice/README.md`; refer there 
 - Full list of standard voices for `gpt-realtime-2` beyond Cedar and Marin. Not confirmed.
 - Whether the GA surface accepts continuous video frames or only still images. webrtcHacks claims "video support" landed at GA but the claim is single-sourced.
 - Custom Voices specifics (training data length, latency impact, regional availability). Gated behind approved-customer access.
+- Whether SIP support extends to `gpt-realtime-translate` or `gpt-realtime-whisper`. The Realtime overview page explicitly says to confirm model support before using SIP for translation or transcription, implying it is not the default path.
+- Exact session-config schema for `/v1/realtime/translations` (the dedicated translation endpoint). The overview page points to a separate sub-guide; this thread did not pull that sub-page.
 
 If any of these matter for your migration, treat them as open and confirm against the live OpenAI docs before depending on them.
 

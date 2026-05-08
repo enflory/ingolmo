@@ -162,6 +162,41 @@ Source: N1-AI/openai-realtime-webrtc-migration-guide on GitHub (field-tested), M
 ### Architectural reuse from prior thread
 - WebRTC-from-browser, server sideband for tool/business logic, server VAD vs semantic VAD tradeoff, mouth-to-ear latency measurement, and prompt structure (skeleton sections) all carry over unchanged. See `realtime-api-low-latency-voice/README.md` rather than restating.
 
+## Update from canonical developer-docs page (Realtime and audio)
+
+User pasted the body of `developers.openai.com/api/docs/guides/realtime`. New / corrected facts:
+
+- **Three session types live on three different endpoints**, not one shared `/v1/realtime` with a session-type field:
+  - Voice-agent: conversation session on `/v1/realtime`.
+  - Translation: continuous session on **`/v1/realtime/translations`** (dedicated endpoint).
+  - Transcription: a transcription session that emits transcript deltas (no separate URL named in this page; configured via session shape).
+- This corrects my earlier note that "all three use the same `session.update` event with type distinguishing `realtime` from `transcription`". Translation is a separate endpoint; the `type`-on-`session.update` story applies to the voice-agent vs transcription split, not translation.
+- **Translation session lifecycle is different from voice-agent lifecycle**:
+  - Continuous (not turn-based).
+  - **Do not call `response.create`.**
+  - Do not wait for the client to commit a user turn.
+  - WebRTC for browser; WebSockets for server media pipelines (phone-call ingest, broadcast).
+- **Transport guidance, explicit**: WebRTC for browser/mobile clients capturing/playing audio directly; WebSocket for server-side media pipelines; SIP for telephony voice agents. Important caveat verbatim: *"Confirm model support before using SIP for translation or transcription."* — i.e. SIP support is not guaranteed for `gpt-realtime-translate` or `gpt-realtime-whisper`.
+- **Safety identifiers** are a documented feature for Realtime requests (recommended, not required):
+  - Header: `OpenAI-Safety-Identifier`.
+  - With ephemeral tokens, set the header on the server-side `client_secret` mint so it binds to the session.
+  - With trusted-server WebSocket or unified WebRTC, set on the connection request.
+  - Identifiers do **not** carry over from Responses API or from other sessions; pass per-session.
+- **Reasoning effort guidance**, official: "Realtime 2 adds reasoning to speech-to-speech workflows. Start with `reasoning.effort` set to `low` for most production voice agents, then adjust based on latency tolerance and task complexity."
+- **Sub-page index** on this overview page (worth listing in the report):
+  - Voice agents (uses Agents SDK + WebRTC for browser audio).
+  - Realtime prompting guide.
+  - Managing conversations (session lifecycle).
+  - Realtime translation.
+  - Realtime transcription.
+  - Realtime with tools (`realtime-mcp` — function tools, MCP servers, connectors).
+  - Webhooks and server-side controls.
+  - Managing costs.
+  - Audio and speech (general primer; non-realtime audio paths).
+- **Non-realtime audio paths are explicitly differentiated**: "Audio transcription models" / Speech to text guide for file/bounded; "Speech generation models" / Text to speech guide; audio-capable Chat Completions models for adding audio to existing apps. Use Realtime only when you need a live session.
+
+Action: rewrite the README's "Decision guide" section to reflect three distinct endpoints, fix the SIP claim for translate/whisper, add a Safety identifiers section, and list the related sub-pages.
+
 ## Open questions / unverified claims
 
 - Exact list of GA voices for gpt-realtime-2 beyond Marin and Cedar is not confirmed in fetched sources. Likely the gpt-realtime voice set carries forward.
