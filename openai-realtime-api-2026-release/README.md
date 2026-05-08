@@ -14,9 +14,9 @@ OpenAI shipped three new models on the existing Realtime API on **2026-05-07**:
 
 | Model | Role | Pricing | Replaces / supersedes |
 | --- | --- | --- | --- |
-| `gpt-realtime-2` | Flagship S2S voice with GPT-5-class reasoning, 128K context, 5-level reasoning effort knob | $32 / 1M audio in, $0.40 cached in, $64 / 1M audio out | `gpt-realtime`, `gpt-realtime-1.5` |
-| `gpt-realtime-translate` | Live S2S translation, 70+ in → 13 out languages | $0.034 / minute | Custom S2S translation prompts |
-| `gpt-realtime-whisper` | Streaming speech-to-text with tunable latency/quality | $0.017 / minute | Batched Whisper, ad-hoc S2S transcription |
+| [`gpt-realtime-2`](https://developers.openai.com/api/docs/models/gpt-realtime-2) | Flagship S2S voice with GPT-5-class reasoning, 128K context, 5-level reasoning effort knob | $32 / 1M audio in, $0.40 cached in, $64 / 1M audio out | `gpt-realtime`, `gpt-realtime-1.5` |
+| [`gpt-realtime-translate`](https://developers.openai.com/api/docs/models/gpt-realtime-translate) | Live S2S translation, 70+ in → 13 out languages | $0.034 / minute | Custom S2S translation prompts |
+| [`gpt-realtime-whisper`](https://developers.openai.com/api/docs/models/gpt-realtime-whisper) | Streaming speech-to-text with tunable latency/quality | $0.017 / minute | Batched Whisper, ad-hoc S2S transcription |
 
 The **API surface is unchanged** by this release: you keep the GA Realtime session you already have. You just change a model ID and, for `gpt-realtime-2`, optionally set `reasoning.effort`.
 
@@ -90,9 +90,9 @@ For voice agents, the Agents SDK + WebRTC is the recommended browser path.
 
 ### Transports
 
-- **WebRTC** — browser and mobile clients that capture or play audio directly. Recommended default for voice agents.
-- **WebSocket** — server-side pipelines that already receive raw audio (call systems, media workers, broadcast ingest). Required path for server-side translation.
-- **SIP** — telephony voice agents (PSTN, PBX, desk phones). **Confirm model support before using SIP for translation or transcription** — SIP availability is documented for the voice-agent path only.
+- **[WebRTC](https://developers.openai.com/api/docs/guides/realtime-webrtc)** — browser and mobile clients that capture or play audio directly. Recommended default for voice agents.
+- **[WebSocket](https://developers.openai.com/api/docs/guides/realtime-websocket)** — server-side pipelines that already receive raw audio (call systems, media workers, broadcast ingest). Required path for server-side translation.
+- **[SIP](https://developers.openai.com/api/docs/guides/realtime-sip)** — telephony voice agents (PSTN, PBX, desk phones). **Confirm model support before using SIP for translation or transcription** — SIP availability is documented for the voice-agent path only.
 
 ### Auth and connection
 
@@ -120,25 +120,40 @@ S2S audio is tokenized by time: 1 token per 100 ms of user audio, 1 token per 50
 
 ### Safety identifiers
 
-If your application identifies individual end users, send a stable, privacy-preserving identifier (e.g. a hashed internal user ID) in the `OpenAI-Safety-Identifier` header on Realtime API requests. Recommended, not required. It scopes abuse enforcement to a single user instead of your whole organization.
+If your application identifies individual end users, send a stable, privacy-preserving identifier (e.g. a hashed internal user ID) in the `OpenAI-Safety-Identifier` header on Realtime API requests. Recommended, not required. It scopes abuse enforcement to a single user instead of your whole organization. See [Safety best practices — Implement safety identifiers](https://developers.openai.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
 
 - With **ephemeral tokens**, set the header on the **server-side** request that mints the client secret so the identifier binds to that session.
 - With trusted-server WebSocket or the unified WebRTC interface, set the header on the connection request.
 - Identifiers do **not** carry over from Responses API requests or from other Realtime sessions. Pass the same stable value per session.
 
-### Sub-pages of the Realtime guide
+### Authoritative sub-pages from the Realtime overview
 
-- *Voice agents* — Agents SDK + WebRTC quickstart for browser voice agents.
-- *Realtime prompting guide* — tuning reasoning, preambles, tool use, unclear audio, exact-entity capture.
-- *Managing conversations* — session lifecycle, response control, interruption.
-- *Realtime translation* — dedicated endpoint, session config, broadcast vs conversational patterns.
-- *Realtime transcription* — streaming transcript-delta event handling.
-- *Realtime with tools* (`realtime-mcp`) — function tools, MCP servers, connectors.
-- *Webhooks and server-side controls* — sideband server control of an active session.
-- *Managing costs* — usage accounting and optimization.
-- *Audio and speech* — non-realtime primer (file uploads, TTS, audio in Chat Completions).
+These are the links the OpenAI Realtime overview page itself points to. Treat them as the source of truth — anything in this report that conflicts with them should be assumed out of date.
 
-Use *Audio and speech* / Speech to text / Text to speech for files, bounded requests, or generated speech that doesn't need a live session — these are explicitly *not* the Realtime API.
+Realtime overview hub: [Realtime and audio](https://developers.openai.com/api/docs/guides/realtime).
+
+Model pages:
+
+- [`gpt-realtime-2`](https://developers.openai.com/api/docs/models/gpt-realtime-2)
+- [`gpt-realtime-translate`](https://developers.openai.com/api/docs/models/gpt-realtime-translate)
+- [`gpt-realtime-whisper`](https://developers.openai.com/api/docs/models/gpt-realtime-whisper)
+
+Realtime guides:
+
+- [Voice agents](https://developers.openai.com/api/docs/guides/voice-agents) — Agents SDK + WebRTC quickstart for browser voice agents.
+- [Realtime prompting guide](https://developers.openai.com/api/docs/guides/realtime-models-prompting) — tuning reasoning, preambles, tool use, unclear audio, exact-entity capture.
+- [Managing conversations](https://developers.openai.com/api/docs/guides/realtime-conversations) — session lifecycle, response control, interruption.
+- [Realtime translation](https://developers.openai.com/api/docs/guides/realtime-translation) — dedicated endpoint, session config, broadcast vs conversational patterns.
+- [Realtime transcription](https://developers.openai.com/api/docs/guides/realtime-transcription) — streaming transcript-delta event handling.
+- [Realtime with tools](https://developers.openai.com/api/docs/guides/realtime-mcp) — function tools, MCP servers, connectors.
+- [Webhooks and server-side controls](https://developers.openai.com/api/docs/guides/realtime-server-controls) — sideband server control of an active session.
+- [Managing costs](https://developers.openai.com/api/docs/guides/realtime-costs) — usage accounting and optimization.
+
+Non-realtime audio paths (use these instead of Realtime when you don't need a live session):
+
+- [Audio and speech](https://developers.openai.com/api/docs/guides/audio) — primer for file uploads, TTS, and audio in Chat Completions.
+- [Speech to text](https://developers.openai.com/api/docs/guides/speech-to-text) — file/bounded transcription, diarization-focused workflows.
+- [Text to speech](https://developers.openai.com/api/docs/guides/text-to-speech) — generated speech.
 
 ---
 
