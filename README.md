@@ -22,7 +22,11 @@ Working material, not a portfolio. Expect unfinished notes, half-formed argument
 
 <!-- projects-start -->
 
-*21 projects*
+*22 projects*
+
+### [udf-ai-agent-data-systems](udf-ai-agent-data-systems/README.md)
+
+Leonhard Spiegelberg’s project critically examines why the modern data stack, centered around DataFrame APIs, fails to meet the needs of AI agents and AI-first developers, citing endemic performance issues and poor agent compatibility. Drawing on empirical benchmarks and his own prior work (notably Tuplex), Spiegelberg demonstrates that slow Python UDFs are not a fundamental limitation but rather an artifact of interpreter-bound execution, and can be overcome via compilation, vectorization (Arrow UDFs), and standard in-memory formats (Arrow). The project argues for function-based, algebraic operators as composable “legos” for agents, replacing complex method chains with discoverable, type-safe functions, enabled by open standards like Substrait and Arrow, and exemplified in frameworks such as Ibis, dbt, and recent agent-centric data tools. Ultimately, it outlines that building agent-native data systems requires fast, introspectable UDFs, standard interfaces, and semantically rich, high-level operators to make data analysis both performant and reliably accessible to LLM-driven agents.
 
 ### [karpathy-llm-wiki](karpathy-llm-wiki/README.md)
 
